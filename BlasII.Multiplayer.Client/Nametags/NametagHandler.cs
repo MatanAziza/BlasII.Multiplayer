@@ -43,7 +43,7 @@ public class NametagHandler
         if (!_client.IsActive)
             return;
 
-        OnReceivePosition(Multiplayer.PlayerName, CoreCache.PlayerSpawn.PlayerInstance.transform.position);
+        OnReceivePosition(MultiplayerCommand.PlayerName, CoreCache.PlayerSpawn.PlayerInstance.transform.position);
 
         foreach (var nametag in _nametags.Values)
         {

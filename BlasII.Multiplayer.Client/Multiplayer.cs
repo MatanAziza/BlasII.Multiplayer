@@ -6,6 +6,7 @@ using BlasII.Multiplayer.Client.Nametags;
 using BlasII.Multiplayer.Client.Storages;
 using BlasII.Multiplayer.Core;
 using Il2CppTGK.Game;
+using BlasII.CheatConsole;
 
 namespace BlasII.Multiplayer.Client;
 
@@ -14,6 +15,7 @@ public class Multiplayer : BlasIIMod
     private readonly NetworkClient _client;
 
     public CompanionHandler CompanionHandler { get; }
+    public MultiplayerCommand MultiCommand { get; }
     public NametagHandler NametagHandler { get; }
     public NetworkHandler NetworkHandler { get; }
     public PlayerHandler PlayerHandler { get; }
@@ -30,6 +32,7 @@ public class Multiplayer : BlasIIMod
         _client.OnClientDisconnected += TEMP_OnDisconnect;
 
         CompanionHandler = new CompanionHandler(_client);
+        MultiCommand = new MultiplayerCommand();
         NametagHandler = new NametagHandler(_client);
         NetworkHandler = new NetworkHandler(_client);
         PlayerHandler = new PlayerHandler(_client);
@@ -54,12 +57,17 @@ public class Multiplayer : BlasIIMod
         NametagHandler.OnUpdate();
         NetworkHandler.OnUpdate();
         PlayerHandler.OnUpdate();
+        MultiCommand.GetNetWorkHandler(NetworkHandler);
 
         StatusDisplay.OnUpdate();
 
         if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Equals))
         {
             NetworkHandler.Connect(SERVER, PORT, new Models.RoomInfo(ROOM, PLAYER, TEAM));
+        }
+        else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Minus))
+        {
+            NetworkHandler.Disconnect();
         }
     }
 
@@ -91,11 +99,16 @@ public class Multiplayer : BlasIIMod
         ModLog.Info($"Disconnected from {ip}");
     }
 
-    private const string SERVER = "localhost";
-    private const int PORT = 33002;
-    private const string PLAYER = "Damocles";
+    protected override void OnRegisterServices(ModServiceProvider provider)
+    {
+        provider.RegisterCommand(MultiCommand);
+    }
+
+    private const string SERVER = "1.1.1.1";
+    private const int PORT = 27051;
+    private const string PLAYER = "Phantom";
     private const string ROOM = "TEST";
     private const int TEAM = 1;
 
-    public static string PlayerName { get; } = PLAYER; // TEMP !!
+    public static string PlayerName { get; } = MultiplayerCommand.PlayerName; // TEMP !!
 }

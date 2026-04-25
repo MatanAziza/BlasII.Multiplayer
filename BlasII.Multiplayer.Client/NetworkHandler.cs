@@ -11,6 +11,8 @@ public class NetworkHandler
 {
     private readonly NetworkClient _client;
 
+    public bool isConnected { get; set;} = false;
+
     private RoomInfo _currentRoom;
 
     public NetworkHandler(NetworkClient client)
@@ -26,10 +28,24 @@ public class NetworkHandler
         try
         {
             _client.Connect(ip, port);
+            isConnected = true;
         }
         catch (System.Exception ex)
         {
             ModLog.Error($"Encountered an error when attempting to connect - {ex}");
+            return;
+        }
+    }
+    public void Disconnect()
+    {
+        try
+        {
+            _client.Disconnect();
+            isConnected = false;
+        }
+        catch (System.Exception ex)
+        {
+            ModLog.Error($"Encountered an error when attempting to disconnect - {ex}");
             return;
         }
     }
