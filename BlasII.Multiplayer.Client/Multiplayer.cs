@@ -16,6 +16,7 @@ public class Multiplayer : BlasIIMod
 
     public CompanionHandler CompanionHandler { get; }
     public MultiplayerCommand MultiCommand { get; }
+    public MultiplayerUI MultiUI { get; set; }
     public NametagHandler NametagHandler { get; }
     public NetworkHandler NetworkHandler { get; }
     public PlayerHandler PlayerHandler { get; }
@@ -33,6 +34,7 @@ public class Multiplayer : BlasIIMod
 
         CompanionHandler = new CompanionHandler(_client);
         MultiCommand = new MultiplayerCommand();
+        MultiUI = new MultiplayerUI();
         NametagHandler = new NametagHandler(_client);
         NetworkHandler = new NetworkHandler(_client);
         PlayerHandler = new PlayerHandler(_client);
@@ -58,6 +60,7 @@ public class Multiplayer : BlasIIMod
         NetworkHandler.OnUpdate();
         PlayerHandler.OnUpdate();
         MultiCommand.GetNetWorkHandler(NetworkHandler);
+        MultiUI.LateUpdate();
 
         StatusDisplay.OnUpdate();
 
@@ -79,6 +82,7 @@ public class Multiplayer : BlasIIMod
         CompanionHandler.OnEnterScene();
         NametagHandler.OnEnterScene();
         PlayerHandler.OnEnterScene();
+        MultiUI.SceneLoaded();
     }
 
     protected override void OnSceneUnloaded(string sceneName)
@@ -86,6 +90,7 @@ public class Multiplayer : BlasIIMod
         CompanionHandler.OnLeaveScene();
         NametagHandler.OnLeaveScene();
         PlayerHandler.OnLeaveScene();
+        MultiUI.SceneUnloaded();
     }
 
     // TODO: move these to the console popup + log
@@ -104,11 +109,11 @@ public class Multiplayer : BlasIIMod
         provider.RegisterCommand(MultiCommand);
     }
 
-    private const string SERVER = "1.1.1.1";
+    private const string SERVER = "localhost";
     private const int PORT = 27051;
     private const string PLAYER = "Phantom";
     private const string ROOM = "TEST";
     private const int TEAM = 1;
 
-    public static string PlayerName { get; } = MultiplayerCommand.PlayerName; // TEMP !!
+    public static string PlayerName { get; } = MultiplayerCommand.PlayerName;
 }

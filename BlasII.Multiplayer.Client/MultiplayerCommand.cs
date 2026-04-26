@@ -32,7 +32,7 @@ public class MultiplayerCommand : ModCommand
                     if (!ValidateParameterCount(args, 4) || networkHandler.isConnected)
                         return;
                     networkHandler.Connect(args[1], Int32.Parse(args[2]), new Models.RoomInfo("a", args[3], 1));
-                    PlayerName = args[4];
+                    PlayerName = args[3];
                     break;
                 }
             case "disconnect":
