@@ -116,5 +116,5 @@ public class Multiplayer : BlasIIMod
     private const string ROOM = "TEST";
     private const int TEAM = 1;
 
-    public static string PlayerName { get; } = MultiplayerCommand.PlayerName;
+    public static string PlayerName { get; set; } = MultiplayerCommand.PlayerName;
 }

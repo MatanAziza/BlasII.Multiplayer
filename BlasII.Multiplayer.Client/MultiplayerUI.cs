@@ -98,7 +98,7 @@ public class MultiplayerUI
             if (networkHandler.isConnected)
                 return;
             networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, 1));
-            MultiplayerCommand.PlayerName = _currentNametag;
+            Multiplayer.PlayerName = _currentNametag;
         }
 
         if (Input.inputString.Length > 0 && !_showHelp)
