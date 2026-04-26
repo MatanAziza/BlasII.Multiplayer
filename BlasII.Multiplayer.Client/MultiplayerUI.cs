@@ -6,8 +6,7 @@ using Il2CppTGK.Game;
 using Il2CppTMPro;
 using System.Text;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Reflection;
+using System;
 using BlasII.ModdingAPI;
 
 
@@ -27,7 +26,17 @@ public class MultiplayerUI
     private TextMeshProUGUI displayedNametag;
     private TextMeshProUGUI displayedTeam;
     private RectTransform backIP;
+    private RectTransform backPort;
+    private RectTransform backNametag;
+    private RectTransform backTeam;
     private TextMeshProUGUI _infoText;
+    private int _selectedInput = 0;
+    private NetworkHandler networkHandler { get; set; }
+    public void GetNetWorkHandler(NetworkHandler network)
+    {
+        networkHandler = network;
+    }
+
 
     public void SceneLoaded()
     {
@@ -41,7 +50,7 @@ public class MultiplayerUI
             SetTextVisibility(false);
     }
 
-    private string ProcessKeyInput(string storage, TextMeshProUGUI display)
+    private string ProcessKeyInput(TextMeshProUGUI display)
     {
         var key = display.text;
         foreach (char c in Input.inputString)
@@ -59,34 +68,60 @@ public class MultiplayerUI
                     key += c;
             }
         }
+        //if (key.Length > 15)
+        //    key = key.Substring(0, 15);
         display.text = key;
-        ModLog.Info($"{key}, {display.text}, after");
         display.color = Color.white;
         return key;
     }
 
     public void LateUpdate()
     {
-        if (Input.inputString.Length > 0 && !_showHelp)
-            _currentIP = ProcessKeyInput(_currentIP, displayedIP);
-        //ProcessKeyInput(_currentPort, displayedPort);
-        //ProcessKeyInput(_currentNametag, displayedNametag);
-        //ProcessKeyInput(_currentTeam, displayedTeam);
-        //if (_ip.GetKeyDown("ToggleMulti"))
         if (UnityEngine.Input.GetKeyDown(KeyCode.F9)) {
             if (_showHelp)
+            {
                 displayedIP.text = _currentIP;
-            _showHelp = !_showHelp;
+                displayedPort.text = _currentPort;
+                displayedNametag.text = _currentNametag;
+                displayedTeam.text = _currentTeam;
+            }
+                _showHelp = !_showHelp;
         }
         if (UnityEngine.Input.GetKeyDown(KeyCode.Backslash))
         {
             _showInfo = !_showInfo;
+            _showHelp = true;
             SetTextVisibility(_showInfo);
         }
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (networkHandler.isConnected)
+                return;
+            networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, 1));
+            MultiplayerCommand.PlayerName = _currentNametag;
+        }
 
-        if (!_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
+        if (Input.inputString.Length > 0 && !_showHelp)
+        {
+            ModLog.Info($"{_selectedInput}");
+            if (_selectedInput == 0)
+                _currentIP = ProcessKeyInput(displayedIP);
+            else if (_selectedInput == 1)
+                _currentPort = ProcessKeyInput(displayedPort);
+            else if (_selectedInput == 2)
+                _currentNametag = ProcessKeyInput(displayedNametag);
+            else if (_selectedInput == 3)
+                _currentTeam = ProcessKeyInput(displayedTeam);
+        }
+        if (!_showHelp && _showInfo && CoreCache.PlayerSpawn.PlayerInstance != null)
+        {
             UpdateTextFill();
-        if (_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
+            if (Input.GetKeyDown(KeyCode.DownArrow) && _selectedInput < 3)
+                _selectedInput++;
+            else if (Input.GetKeyDown(KeyCode.UpArrow) && _selectedInput > 0)
+                _selectedInput--;
+        }
+            if (_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
             UpdateTextHelp();
     }
 
@@ -109,6 +144,9 @@ public class MultiplayerUI
 
         _infoText.text = sb.ToString();
         displayedIP.text = "";
+        displayedPort.text = "";
+        displayedNametag.text = "";
+        displayedTeam.text = "";
     }
     private void UpdateTextFill()
     {
@@ -119,9 +157,6 @@ public class MultiplayerUI
 
         // Port
         sb.AppendLine($"Port: ");
-
-        // Room
-        sb.AppendLine($"Room: ");
 
         // Nametag
         sb.AppendLine($"Nametag: ");
@@ -158,13 +193,26 @@ public class MultiplayerUI
             FontSize = 40,
             WordWrap = false,
         });
+        backIP = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "IPBack",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(200, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(75, -912),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddImage(new ImageCreationOptions()
+        {
+            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+        }).rectTransform;
         displayedIP = UIModder.Create(new RectCreationOptions()
         {
             Name = "IP",
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(400, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(80, -872),
+            Position = new Vector2(80, -912),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddText(new TextCreationOptions()
@@ -173,18 +221,90 @@ public class MultiplayerUI
             FontSize = 40,
             WordWrap = false,
         });
-        backIP = UIModder.Create(new RectCreationOptions()
+        backPort = UIModder.Create(new RectCreationOptions()
         {
-            Name = "CheatConsole",
-            Pivot = Vector2.zero,
-            Position = new Vector2(80, -872),
-            Size = new Vector2(400, 35),
+            Name = "PortBack",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(200, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(105, -952),
             XRange = Vector2.zero,
-            YRange = Vector2.zero,
+            YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
             Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
         }).rectTransform;
+        displayedPort = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "Port",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(370, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(110, -952),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddText(new TextCreationOptions()
+        {
+            Alignment = TextAlignmentOptions.BottomLeft,
+            FontSize = 40,
+            WordWrap = false,
+        });
+        backNametag = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "NametagBack",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(200, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(160, -992),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddImage(new ImageCreationOptions()
+        {
+            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+        }).rectTransform;
+        displayedNametag = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "Nametag",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(370, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(165, -992),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddText(new TextCreationOptions()
+        {
+            Alignment = TextAlignmentOptions.BottomLeft,
+            FontSize = 40,
+            WordWrap = false,
+        });
+        backTeam = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "TeamBack",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(200, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(125, -1032),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddImage(new ImageCreationOptions()
+        {
+            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+        }).rectTransform;
+        displayedTeam = UIModder.Create(new RectCreationOptions()
+        {
+            Name = "Team",
+            Parent = UIModder.Parents.GameLogic,
+            Size = new Vector2(370, 35),
+            Pivot = new Vector2(0, 1),
+            Position = new Vector2(130, -1032),
+            XRange = Vector2.zero,
+            YRange = Vector2.one,
+        }).AddText(new TextCreationOptions()
+        {
+            Alignment = TextAlignmentOptions.BottomLeft,
+            FontSize = 40,
+            WordWrap = false,
+        });
     }
 
     // size of text: 25 px heigh
