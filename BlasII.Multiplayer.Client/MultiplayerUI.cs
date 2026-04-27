@@ -46,7 +46,6 @@ public class MultiplayerUI
         _isConnected = network.isConnected;
     }
 
-
     public void SceneLoaded()
     {
         if (_showInfo && SceneHelper.GameSceneLoaded)
@@ -61,47 +60,40 @@ public class MultiplayerUI
 
     private string ProcessKeyInput(string display)
     {
-        //var key = display.text;
-        var key = display;
         foreach (char c in Input.inputString)
         {
             // Backspace
             if (c == '\b')
             {
-                if (key.Length > 0)
-                    key = key[..^1];
+                if (display.Length > 0)
+                    display = display[..^1];
             }
             // Regular character
             else
             {
-                if ((c != 13 && c != ' ' )|| key.Length > 0)
-                    key += c;
+                if ((c != '\r' && c != ' ' )|| display.Length > 0)
+                    display += c;
             }
         }
-        return key;
+        return display;
     }
 
-    public void LateUpdate()
+    private void UpdateDisplay()
     {
-        // Switch Display
         if (Input.GetKeyDown(KeyCode.F9))
         {
             _showHelp = !_showHelp;
             SwitchVisibleUI();
         }
-        // CheatConsole Hide Help
-        if (Input.GetKeyDown(KeyCode.Backslash))
-        {
-            _showInfo = !_showInfo;
-            _showHelp = true;
-            SetTextVisibility(_showInfo);
-        }
-        // Connect/Disconnect if "Connect" selected
+    }
+
+    private void ConnectManager()
+    {
         if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && _showInfo && !_showHelp)
         {
             if (networkHandler.isConnected)
                 networkHandler.Disconnect();
-                //return;
+            //return;
             else
             {
                 networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, 1));
@@ -111,7 +103,10 @@ public class MultiplayerUI
             _showHelp = true;
             SwitchVisibleUI();
         }
-        // switch between inputs
+    }
+
+    private void SelectInput()
+    {
         if (!_showHelp && _showInfo && CoreCache.PlayerSpawn.PlayerInstance != null)
         {
             if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput < 4)
@@ -126,7 +121,10 @@ public class MultiplayerUI
             }
             UpdateTextFill();
         }
-        // process inputs based on selection
+    }
+
+    private void InputFiller()
+    {
         if (Input.inputString.Length > 0 && !_showHelp)
         {
             if (_selectedInput == 0)
@@ -138,6 +136,26 @@ public class MultiplayerUI
             else if (_selectedInput == 3)
                 _currentTeam = ProcessKeyInput(_currentTeam);
         }
+    }
+
+    public void LateUpdate()
+    {
+        // Switch Display
+        UpdateDisplay();
+        // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            _showInfo = !_showInfo;
+            _showHelp = true;
+            SetTextVisibility(_showInfo);
+        }
+        // Connect/Disconnect if "Connect" selected
+        ConnectManager();
+        // switch between inputs
+        SelectInput();
+        // process inputs based on selection
+        InputFiller();
+        // Change info to help message
         if (_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
             UpdateTextHelp();
     }
@@ -145,7 +163,6 @@ public class MultiplayerUI
     private void UpdateTextHelp()
     {
         var sb = new StringBuilder();
-
         // How to Connect
         sb.AppendLine($"Multiplayer: Press F9");
 
@@ -154,22 +171,16 @@ public class MultiplayerUI
     private void UpdateTextFill()
     {
         var sb = new StringBuilder();
-
         // IP
         sb.AppendLine($"IP: {_currentIP}");
-
         // Port
         sb.AppendLine($"Port: {_currentPort}");
-
         // Nametag
         sb.AppendLine($"Nametag: {_currentNametag}");
-
         // Team
         sb.AppendLine($"Team: {_currentTeam}");
-
         // Connect
         sb.AppendLine(networkHandler.isConnected ? "Disconnect" : "Connect");
-
 
         _connectInfo.text = sb.ToString();
     }
