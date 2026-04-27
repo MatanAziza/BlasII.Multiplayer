@@ -17,8 +17,9 @@ public class MultiplayerUI
 {
 
     public bool _showHelp = true;
-    public bool _showInfo = true;
+    public bool _canType = true;
     private bool _isConnected = false;
+    private float _opacity = 0.9f;
 
     //Stored values between F9's
     private string _currentIP = string.Empty;
@@ -48,13 +49,13 @@ public class MultiplayerUI
 
     public void SceneLoaded()
     {
-        if (_showInfo && SceneHelper.GameSceneLoaded)
+        if (SceneHelper.GameSceneLoaded)
             SetTextVisibility(true);
     }
 
     public void SceneUnloaded()
     {
-        if (_showInfo && SceneHelper.GameSceneLoaded)
+        if (SceneHelper.GameSceneLoaded)
             SetTextVisibility(false);
     }
 
@@ -80,7 +81,7 @@ public class MultiplayerUI
 
     private void UpdateDisplay()
     {
-        if (Input.GetKeyDown(KeyCode.F9))
+        if (Input.GetKeyDown(KeyCode.F9) && _canType)
         {
             _showHelp = !_showHelp;
             SwitchVisibleUI();
@@ -89,7 +90,7 @@ public class MultiplayerUI
 
     private void ConnectManager()
     {
-        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && _showInfo && !_showHelp)
+        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && !_showHelp && _canType)
         {
             if (networkHandler.isConnected)
                 networkHandler.Disconnect();
@@ -107,7 +108,7 @@ public class MultiplayerUI
 
     private void SelectInput()
     {
-        if (!_showHelp && _showInfo && CoreCache.PlayerSpawn.PlayerInstance != null)
+        if (!_showHelp && _canType && CoreCache.PlayerSpawn.PlayerInstance != null)
         {
             if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput < 4)
             {
@@ -125,7 +126,7 @@ public class MultiplayerUI
 
     private void InputFiller()
     {
-        if (Input.inputString.Length > 0 && !_showHelp)
+        if (Input.inputString.Length > 0 && !_showHelp && _canType)
         {
             if (_selectedInput == 0)
                 _currentIP = ProcessKeyInput(_currentIP);
@@ -145,9 +146,8 @@ public class MultiplayerUI
         // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
-            _showInfo = !_showInfo;
-            _showHelp = true;
-            SetTextVisibility(_showInfo);
+            _canType = !_canType;
+            UpdateTextFill();
         }
         // Connect/Disconnect if "Connect" selected
         ConnectManager();
@@ -164,7 +164,7 @@ public class MultiplayerUI
     {
         var sb = new StringBuilder();
         // How to Connect
-        sb.AppendLine($"Multiplayer: Press F9");
+        sb.AppendLine(_canType ? $"Multiplayer Toggle On: F9" : "");
 
         _connectInfo.text = sb.ToString();
     }
@@ -181,6 +181,9 @@ public class MultiplayerUI
         sb.AppendLine($"Team: {_currentTeam}");
         // Connect
         sb.AppendLine(networkHandler.isConnected ? "Disconnect" : "Connect");
+        //Toggle 
+        sb.AppendLine(_canType ? $"Multiplayer Toggle Off: F9" : "");
+
 
         _connectInfo.text = sb.ToString();
     }
@@ -195,12 +198,12 @@ public class MultiplayerUI
 
     private void SwitchVisibleUI()
     {
-        backIP.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 0);
-        backPort.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 1);
-        backNametag.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 2);
-        backTeam.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 3);
-        backConnect.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 4 && !_isConnected);
-        backDisconnect.gameObject.SetActive(!_showHelp && _showInfo && _selectedInput == 4 && _isConnected);
+        backIP.gameObject.SetActive(!_showHelp && _selectedInput == 0);
+        backPort.gameObject.SetActive(!_showHelp && _selectedInput == 1);
+        backNametag.gameObject.SetActive(!_showHelp && _selectedInput == 2);
+        backTeam.gameObject.SetActive(!_showHelp && _selectedInput == 3);
+        backConnect.gameObject.SetActive(!_showHelp && _selectedInput == 4 && !_isConnected);
+        backDisconnect.gameObject.SetActive(!_showHelp && _selectedInput == 4 && _isConnected);
     }
 
     private void CreateText()
@@ -211,12 +214,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(285, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(75, -872),
+            Position = new Vector2(70, -832),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backPort = UIModder.Create(new RectCreationOptions()
         {
@@ -224,12 +227,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(255, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(105, -912),
+            Position = new Vector2(100, -872),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backNametag = UIModder.Create(new RectCreationOptions()
         {
@@ -237,12 +240,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(200, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(160, -952),
+            Position = new Vector2(155, -912),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backTeam = UIModder.Create(new RectCreationOptions()
         {
@@ -250,12 +253,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(235, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(125, -992),
+            Position = new Vector2(110, -952),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backConnect = UIModder.Create(new RectCreationOptions()
         {
@@ -263,12 +266,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(120, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(15, -1032),
+            Position = new Vector2(15, -992),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backDisconnect = UIModder.Create(new RectCreationOptions()
         {
@@ -276,12 +279,12 @@ public class MultiplayerUI
             Parent = UIModder.Parents.GameLogic,
             Size = new Vector2(170, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(15, -1032),
+            Position = new Vector2(15, -992),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.15f, 0.15f, 0.15f, 0.9f)
+            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         _connectInfo = UIModder.Create(new RectCreationOptions()
         {
