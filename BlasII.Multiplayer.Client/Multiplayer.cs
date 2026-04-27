@@ -78,7 +78,7 @@ public class Multiplayer : BlasIIMod
                 OnDisable();
         }
         else
-            OnDisable();
+            OnEnable();
     }
     public void OnEnable()
     {
