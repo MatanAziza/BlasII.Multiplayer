@@ -61,6 +61,7 @@ public class Multiplayer : BlasIIMod
         PlayerHandler.OnUpdate();
         MultiCommand.GetNetWorkHandler(NetworkHandler);
         MultiUI.GetNetWorkHandler(NetworkHandler);
+        MultiUI.GetInputHandler(InputHandler);
         MultiUI.LateUpdate();
 
         StatusDisplay.OnUpdate();

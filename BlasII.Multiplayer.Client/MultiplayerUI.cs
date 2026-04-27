@@ -46,6 +46,11 @@ public class MultiplayerUI
         networkHandler = network;
         _isConnected = network.isConnected;
     }
+    private InputHandler inputHandler { get; set; }
+    public void GetInputHandler(InputHandler input)
+    {
+        inputHandler = input;
+    }
 
     public void SceneLoaded()
     {
@@ -84,13 +89,14 @@ public class MultiplayerUI
         if (Input.GetKeyDown(KeyCode.F9) && _canType)
         {
             _showHelp = !_showHelp;
+            _canType = _showHelp ? true : false;
             SwitchVisibleUI();
         }
     }
 
     private void ConnectManager()
     {
-        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && !_showHelp && _canType)
+        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && !_showHelp)
         {
             if (networkHandler.isConnected)
                 networkHandler.Disconnect();
@@ -108,7 +114,7 @@ public class MultiplayerUI
 
     private void SelectInput()
     {
-        if (!_showHelp && _canType && CoreCache.PlayerSpawn.PlayerInstance != null)
+        if (!_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
         {
             if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput < 4)
             {
@@ -126,7 +132,7 @@ public class MultiplayerUI
 
     private void InputFiller()
     {
-        if (Input.inputString.Length > 0 && !_showHelp && _canType)
+        if (Input.inputString.Length > 0 && !_showHelp)
         {
             if (_selectedInput == 0)
                 _currentIP = ProcessKeyInput(_currentIP);
@@ -141,9 +147,10 @@ public class MultiplayerUI
 
     public void LateUpdate()
     {
+        //var oldState = _canType;
         // Switch Display
         UpdateDisplay();
-        // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP
+        // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP    
         if (Input.GetKeyDown(KeyCode.Backslash))
         {
             _canType = !_canType;
@@ -154,7 +161,8 @@ public class MultiplayerUI
         // switch between inputs
         SelectInput();
         // process inputs based on selection
-        InputFiller();
+        //if (oldState == _canType)
+            InputFiller();
         // Change info to help message
         if (_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
             UpdateTextHelp();
@@ -176,13 +184,13 @@ public class MultiplayerUI
         // Port
         sb.AppendLine($"Port: {_currentPort}");
         // Nametag
-        sb.AppendLine($"Nametag: {_currentNametag}");
+        sb.AppendLine($"Name: {_currentNametag}");
         // Team
         sb.AppendLine($"Team: {_currentTeam}");
         // Connect
         sb.AppendLine(networkHandler.isConnected ? "Disconnect" : "Connect");
         //Toggle 
-        sb.AppendLine(_canType ? $"Multiplayer Toggle Off: F9" : "");
+        sb.AppendLine($"Multiplayer Toggle Off: F9");
 
 
         _connectInfo.text = sb.ToString();
@@ -212,79 +220,79 @@ public class MultiplayerUI
         {
             Name = "IPBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(285, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(70, -832),
+            Position = new Vector2(15, -832),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backPort = UIModder.Create(new RectCreationOptions()
         {
             Name = "PortBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(255, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(100, -872),
+            Position = new Vector2(15, -872),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backNametag = UIModder.Create(new RectCreationOptions()
         {
             Name = "NametagBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(200, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(155, -912),
+            Position = new Vector2(15, -912),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backTeam = UIModder.Create(new RectCreationOptions()
         {
             Name = "TeamBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(235, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
-            Position = new Vector2(110, -952),
+            Position = new Vector2(15, -952),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backConnect = UIModder.Create(new RectCreationOptions()
         {
             Name = "ConnectBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(120, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
             Position = new Vector2(15, -992),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         backDisconnect = UIModder.Create(new RectCreationOptions()
         {
             Name = "DisconnectBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(170, 35),
+            Size = new Vector2(340, 35),
             Pivot = new Vector2(0, 1),
             Position = new Vector2(15, -992),
             XRange = Vector2.zero,
             YRange = Vector2.one,
         }).AddImage(new ImageCreationOptions()
         {
-            Color = new Color(0.51f, 0.06f, 0.09f, _opacity)
+            Color = new Color(0.09f, 0.06f, 0.09f, _opacity)
         }).rectTransform;
         _connectInfo = UIModder.Create(new RectCreationOptions()
         {
