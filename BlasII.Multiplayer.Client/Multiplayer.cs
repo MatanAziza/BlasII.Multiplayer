@@ -66,15 +66,29 @@ public class Multiplayer : BlasIIMod
         StatusDisplay.OnUpdate();
 
         if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Equals))
-        {
             NetworkHandler.Connect(SERVER, PORT, new Models.RoomInfo(ROOM, PLAYER, TEAM));
-        }
         else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Minus))
-        {
             NetworkHandler.Disconnect();
+
+        if (MultiUI._showInfo)
+        {
+            if (!MultiUI._showHelp)
+                OnEnable();
+            else
+                OnDisable();
         }
+        else
+            OnDisable();
+    }
+    public void OnEnable()
+    {
+        InputHandler.InputBlocked = true;
     }
 
+    public void OnDisable()
+    {
+        InputHandler.InputBlocked = false;
+    }
     protected override void OnSceneLoaded(string sceneName)
     {
         if (sceneName == "MainMenu")

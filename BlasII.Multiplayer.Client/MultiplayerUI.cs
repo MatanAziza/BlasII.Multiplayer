@@ -15,8 +15,8 @@ namespace BlasII.Multiplayer.Client;
 public class MultiplayerUI
 {
 
-    private bool _showHelp = true;
-    private bool _showInfo = true;
+    public bool _showHelp = true;
+    public bool _showInfo = true;
     private string _currentIP = string.Empty;
     private string _currentPort = string.Empty;
     private string _currentNametag = string.Empty;
@@ -77,16 +77,9 @@ public class MultiplayerUI
 
     public void LateUpdate()
     {
-        if (UnityEngine.Input.GetKeyDown(KeyCode.F9)) {
-            if (_showHelp)
-            {
-                displayedIP.text = _currentIP;
-                displayedPort.text = _currentPort;
-                displayedNametag.text = _currentNametag;
-                displayedTeam.text = _currentTeam;
-            }
-                _showHelp = !_showHelp;
-        }
+        if (UnityEngine.Input.GetKeyDown(KeyCode.F9))
+            _showHelp = !_showHelp;
+        SwitchVisibleUI();
         if (UnityEngine.Input.GetKeyDown(KeyCode.Backslash))
         {
             _showInfo = !_showInfo;
@@ -99,11 +92,11 @@ public class MultiplayerUI
                 return;
             networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, 1));
             Multiplayer.PlayerName = _currentNametag;
+            _showHelp = true;
         }
 
         if (Input.inputString.Length > 0 && !_showHelp)
         {
-            ModLog.Info($"{_selectedInput}");
             if (_selectedInput == 0)
                 _currentIP = ProcessKeyInput(displayedIP);
             else if (_selectedInput == 1)
@@ -143,10 +136,6 @@ public class MultiplayerUI
         sb.AppendLine($"Multiplayer: Press F9");
 
         _infoText.text = sb.ToString();
-        displayedIP.text = "";
-        displayedPort.text = "";
-        displayedNametag.text = "";
-        displayedTeam.text = "";
     }
     private void UpdateTextFill()
     {
@@ -171,9 +160,24 @@ public class MultiplayerUI
     private void SetTextVisibility(bool visible)
     {
         if (_infoText == null)
+        {
             CreateText();
+            SwitchVisibleUI();
+        }
 
         _infoText.gameObject.SetActive(visible);
+    }
+
+    private void SwitchVisibleUI()
+    {
+        displayedIP.gameObject.SetActive(!_showHelp);
+        displayedPort.gameObject.SetActive(!_showHelp);
+        displayedNametag.gameObject.SetActive(!_showHelp);
+        displayedTeam.gameObject.SetActive(!_showHelp);
+        backIP.gameObject.SetActive(!_showHelp && _selectedInput == 0);
+        backPort.gameObject.SetActive(!_showHelp && _selectedInput == 1);
+        backNametag.gameObject.SetActive(!_showHelp && _selectedInput == 2);
+        backTeam.gameObject.SetActive(!_showHelp && _selectedInput == 3);
     }
 
     private void CreateText()
@@ -197,7 +201,7 @@ public class MultiplayerUI
         {
             Name = "IPBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(200, 35),
+            Size = new Vector2(285, 35),
             Pivot = new Vector2(0, 1),
             Position = new Vector2(75, -912),
             XRange = Vector2.zero,
@@ -225,7 +229,7 @@ public class MultiplayerUI
         {
             Name = "PortBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(200, 35),
+            Size = new Vector2(255, 35),
             Pivot = new Vector2(0, 1),
             Position = new Vector2(105, -952),
             XRange = Vector2.zero,
@@ -281,7 +285,7 @@ public class MultiplayerUI
         {
             Name = "TeamBack",
             Parent = UIModder.Parents.GameLogic,
-            Size = new Vector2(200, 35),
+            Size = new Vector2(235, 35),
             Pivot = new Vector2(0, 1),
             Position = new Vector2(125, -1032),
             XRange = Vector2.zero,
