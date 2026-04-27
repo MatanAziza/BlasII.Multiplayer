@@ -12,13 +12,13 @@ public readonly struct ConnectionInfo
     /// Creates a new connection info
     /// </summary>
     [JsonConstructor]
-    public ConnectionInfo(string serverIp, string roomName, string playerName, int port, byte teamNumber)
+    public ConnectionInfo(string serverIp, string serverPort, string playerName, string teamNumber, string roomName)
     {
-        ServerIp = serverIp ?? string.Empty;
-        RoomName = roomName ?? string.Empty;
-        PlayerName = playerName ?? string.Empty;
-        ServerPort = port;
+        ServerIp = serverIp;
+        ServerPort = serverPort;
+        PlayerName = playerName;
         TeamNumber = teamNumber;
+        RoomName = roomName;
     }
 
     /// <summary>
@@ -26,11 +26,11 @@ public readonly struct ConnectionInfo
     /// </summary>
     public ConnectionInfo()
     {
-        ServerIp = $"{Protocol.DEFAULT_IP}";
-        RoomName = string.Empty;
+        ServerIp = string.Empty;
+        ServerPort = "27051";
         PlayerName = string.Empty;
-        ServerPort = Protocol.DEFAULT_PORT;
-        TeamNumber = 1;
+        TeamNumber = string.Empty;
+        RoomName = string.Empty;
     }
 
     /// <summary>
@@ -39,9 +39,9 @@ public readonly struct ConnectionInfo
     public string ServerIp { get; }
 
     /// <summary>
-    /// The name of the room
+    /// The port
     /// </summary>
-    public string RoomName { get; }
+    public string ServerPort { get; }
 
     /// <summary>
     /// The name of the player
@@ -49,12 +49,12 @@ public readonly struct ConnectionInfo
     public string PlayerName { get; }
 
     /// <summary>
-    /// The port
-    /// </summary>
-    public int ServerPort { get; }
-
-    /// <summary>
     /// The team number (1-8)
     /// </summary>
-    public byte TeamNumber { get; }
+    public string TeamNumber { get; }
+
+    /// <summary>
+    /// The name of the room
+    /// </summary>
+    public string RoomName { get; }
 }

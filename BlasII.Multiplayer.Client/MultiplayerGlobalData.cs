@@ -1,5 +1,4 @@
 ﻿using BlasII.ModdingAPI.Persistence;
-using BlasII.Multiplayer.Client;
 
 namespace BlasII.Multiplayer.Client;
 

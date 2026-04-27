@@ -27,7 +27,7 @@ public class MultiplayerUI
     private string _currentIP = string.Empty;
     private string _currentPort = string.Empty;
     private string _currentNametag = string.Empty;
-    private string _currentTeam = string.Empty;
+    private string _currentTeam = "1";
 
     //Displayed boxes where to fill
     private RectTransform backIP;
@@ -65,6 +65,8 @@ public class MultiplayerUI
 
     private string ProcessKeyInput(string display)
     {
+        if (display.Length > 0 && display.Substring(display.Length -1, 1)[0] == '\r')
+            display = display[..^1];
         foreach (char c in Input.inputString)
         {
             // Backspace
@@ -85,14 +87,19 @@ public class MultiplayerUI
 
     private void UpdateDisplay()
     {
-        if (Input.GetKeyDown(KeyCode.F9) && _canType)
+        if (Input.GetKeyDown(KeyCode.F9))
         {
-            _currentIP = _currentIP == string.Empty ? _connection.ServerIp : _currentIP;
-            _currentPort = _currentPort == string.Empty ? _connection.ServerPort.ToString() : _currentPort;
-            _currentNametag = _currentNametag == string.Empty ? _connection.PlayerName : _currentNametag;
-            _currentTeam = _currentTeam == "1" ? _connection.TeamNumber.ToString() : _currentTeam;
-            _showHelp = !_showHelp;
-            SwitchVisibleUI();
+            if (_canType)
+            {
+                _currentIP = _connection.ServerIp != string.Empty ? _connection.ServerIp : _currentIP;
+                _currentPort = _connection.ServerPort != string.Empty ? _connection.ServerPort : _currentPort;
+                _currentNametag = _connection.PlayerName != string.Empty ? _connection.PlayerName : _currentNametag;
+                _currentTeam = _connection.TeamNumber != string.Empty ? _connection.TeamNumber : _currentTeam;
+                _showHelp = !_showHelp;
+                SwitchVisibleUI();
+            }
+            else
+                _connection = new ConnectionInfo(_currentIP, _currentPort, _currentNametag , _currentTeam, "a");
         }
     }
 
@@ -105,7 +112,7 @@ public class MultiplayerUI
             //return;
             else
             {
-                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, 1));
+                networkHandler.Connect(_currentIP, _currentPort, new Models.RoomInfo("a", _currentNametag, _currentTeam));
                 Multiplayer.PlayerName = _currentNametag;
             }
             _isConnected = networkHandler.isConnected;
@@ -168,7 +175,7 @@ public class MultiplayerUI
         SelectInput();
         // process inputs based on selection
         //if (oldState == _canType)
-            InputFiller();
+        InputFiller();
         // Change info to help message
         if (_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
             UpdateTextHelp();

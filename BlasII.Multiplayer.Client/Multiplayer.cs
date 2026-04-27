@@ -75,7 +75,6 @@ public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData
             OnEnable();
         else
             OnDisable();
-        ModLog.Info($"{LastConnectionInfo.ServerIp}, {LastConnectionInfo.ServerPort}, {LastConnectionInfo.PlayerName}, {LastConnectionInfo.RoomName}, {LastConnectionInfo.TeamNumber}");
     }
     public void OnEnable()
     {
@@ -121,6 +120,7 @@ public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData
     /// </summary>
     public MultiplayerGlobalData SaveGlobal()
     {
+        ModLog.Info($"Saving: {LastConnectionInfo.ServerIp}, {LastConnectionInfo.ServerPort}, {LastConnectionInfo.PlayerName}, {LastConnectionInfo.RoomName}, {LastConnectionInfo.TeamNumber}");
         return new MultiplayerGlobalData()
         {
             LastConnection = LastConnectionInfo
@@ -132,6 +132,7 @@ public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData
     /// </summary>
     public void LoadGlobal(MultiplayerGlobalData data)
     {
+        ModLog.Info($"Loading: {data.LastConnection.ServerIp}, {data.LastConnection.ServerPort}, {data.LastConnection.PlayerName}, {data.LastConnection.RoomName}, {data.LastConnection.TeamNumber}");
         LastConnectionInfo = data.LastConnection;
     }
 
