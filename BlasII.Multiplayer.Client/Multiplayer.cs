@@ -71,7 +71,7 @@ public class Multiplayer : BlasIIMod
         else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Minus))
             NetworkHandler.Disconnect();
 
-        if (!MultiUI._showHelp || !MultiUI._canType)
+        if (!MultiUI._canType || !MultiUI._showHelp)
             OnEnable();
         else
             OnDisable();

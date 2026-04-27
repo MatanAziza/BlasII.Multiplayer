@@ -89,7 +89,6 @@ public class MultiplayerUI
         if (Input.GetKeyDown(KeyCode.F9) && _canType)
         {
             _showHelp = !_showHelp;
-            _canType = _showHelp ? true : false;
             SwitchVisibleUI();
         }
     }
@@ -116,7 +115,10 @@ public class MultiplayerUI
     {
         if (!_showHelp && CoreCache.PlayerSpawn.PlayerInstance != null)
         {
-            if ((Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput < 4)
+            if ((Input.GetKeyDown(KeyCode.DownArrow) ||
+                Input.GetKeyDown(KeyCode.Return) ||
+                Input.GetKeyDown(KeyCode.KeypadEnter))
+                && _selectedInput < 4)
             {
                 _selectedInput++;
                 SwitchVisibleUI();
@@ -151,10 +153,10 @@ public class MultiplayerUI
         // Switch Display
         UpdateDisplay();
         // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP    
-        if (Input.GetKeyDown(KeyCode.Backslash))
+        if (Input.GetKeyDown(KeyCode.Backslash) && _showHelp)
         {
             _canType = !_canType;
-            UpdateTextFill();
+            SetTextVisibility(_canType);
         }
         // Connect/Disconnect if "Connect" selected
         ConnectManager();
