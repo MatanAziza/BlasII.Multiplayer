@@ -1,4 +1,5 @@
 ﻿using BlasII.CheatConsole;
+using BlasII.Multiplayer.Client;
 using BlasII.Framework.UI;
 using BlasII.ModdingAPI;
 using BlasII.ModdingAPI.Helpers;
@@ -8,7 +9,6 @@ using Il2CppTMPro;
 using System;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Networking.Types;
 
 
 namespace BlasII.Multiplayer.Client;
@@ -18,14 +18,16 @@ public class MultiplayerUI
 
     public bool _showHelp = true;
     public bool _canType = true;
-    private bool _isConnected = false;
+    private bool _isConnected;
     private float _opacity = 0.9f;
 
+    private ConnectionInfo _connection = new();
+
     //Stored values between F9's
-    private string _currentIP = string.Empty;
-    private string _currentPort = string.Empty;
-    private string _currentNametag = string.Empty;
-    private string _currentTeam = string.Empty;
+    private string _currentIP = Main.Multiplayer.LastConnectionInfo.ServerIp ?? string.Empty;
+    private string _currentPort = Main.Multiplayer.LastConnectionInfo.ServerPort.ToString() ?? string.Empty;
+    private string _currentNametag = Main.Multiplayer.LastConnectionInfo.PlayerName ?? string.Empty;
+    private string _currentTeam = Main.Multiplayer.LastConnectionInfo.TeamNumber.ToString() ?? string.Empty;
 
     //Displayed boxes where to fill
     private RectTransform backIP;
@@ -40,17 +42,8 @@ public class MultiplayerUI
     private int _selectedInput = 0;
 
 
-    private NetworkHandler networkHandler { get; set; }
-    public void GetNetWorkHandler(NetworkHandler network)
-    {
-        networkHandler = network;
-        _isConnected = network.isConnected;
-    }
-    private InputHandler inputHandler { get; set; }
-    public void GetInputHandler(InputHandler input)
-    {
-        inputHandler = input;
-    }
+    private NetworkHandler networkHandler = Main.Multiplayer.NetworkHandler;
+    private InputHandler inputHandler = Main.Multiplayer.InputHandler;
 
     public void SceneLoaded()
     {
@@ -149,9 +142,10 @@ public class MultiplayerUI
 
     public void LateUpdate()
     {
-        //var oldState = _canType;
-        // Switch Display
-        UpdateDisplay();
+        _isConnected = networkHandler.isConnected;
+    //var oldState = _canType;
+    // Switch Display
+    UpdateDisplay();
         // CheatConsole Hide Help, buggy when showing ip, port, etc TEMP    
         if (Input.GetKeyDown(KeyCode.Backslash) && _showHelp)
         {

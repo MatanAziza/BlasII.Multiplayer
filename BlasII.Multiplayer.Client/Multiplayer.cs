@@ -1,5 +1,6 @@
 ﻿using Basalt.Framework.Networking.Client;
 using BlasII.ModdingAPI;
+using BlasII.ModdingAPI.Persistence;
 using BlasII.ModdingAPI.Helpers;
 using BlasII.Multiplayer.Client.Displays;
 using BlasII.Multiplayer.Client.Nametags;
@@ -10,7 +11,7 @@ using BlasII.CheatConsole;
 
 namespace BlasII.Multiplayer.Client;
 
-public class Multiplayer : BlasIIMod
+public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData>
 {
     private readonly NetworkClient _client;
 
@@ -25,6 +26,11 @@ public class Multiplayer : BlasIIMod
 
     public AnimationStorage AnimationStorage { get; }
     public IconStorage IconStorage { get; }
+
+    /// <summary>
+    /// The most recent connectioninfo that should be used as the default
+    /// </summary>
+    public ConnectionInfo LastConnectionInfo { get; set; } = new();
 
     internal Multiplayer() : base(ModInfo.MOD_ID, ModInfo.MOD_NAME, ModInfo.MOD_AUTHOR, ModInfo.MOD_VERSION)
     {
@@ -59,17 +65,9 @@ public class Multiplayer : BlasIIMod
         NametagHandler.OnUpdate();
         NetworkHandler.OnUpdate();
         PlayerHandler.OnUpdate();
-        MultiCommand.GetNetWorkHandler(NetworkHandler);
-        MultiUI.GetNetWorkHandler(NetworkHandler);
-        MultiUI.GetInputHandler(InputHandler);
         MultiUI.LateUpdate();
 
         StatusDisplay.OnUpdate();
-
-        if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Equals))
-            NetworkHandler.Connect(SERVER, PORT, new Models.RoomInfo(ROOM, PLAYER, TEAM));
-        else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.Minus))
-            NetworkHandler.Disconnect();
 
         if (!MultiUI._canType || !MultiUI._showHelp)
             OnEnable();
@@ -113,6 +111,25 @@ public class Multiplayer : BlasIIMod
     private void TEMP_OnDisconnect(string ip)
     {
         ModLog.Info($"Disconnected from {ip}");
+    }
+
+    /// <summary>
+    /// Save last connection info
+    /// </summary>
+    public MultiplayerGlobalData SaveGlobal()
+    {
+        return new MultiplayerGlobalData()
+        {
+            LastConnection = LastConnectionInfo
+        };
+    }
+
+    /// <summary>
+    /// Load last connection info
+    /// </summary>
+    public void LoadGlobal(MultiplayerGlobalData data)
+    {
+        LastConnectionInfo = data.LastConnection;
     }
 
     protected override void OnRegisterServices(ModServiceProvider provider)

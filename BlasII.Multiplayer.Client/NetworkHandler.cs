@@ -29,6 +29,7 @@ public class NetworkHandler
         {
             _client.Connect(ip, port);
             isConnected = true;
+            Main.Multiplayer.LastConnectionInfo = new ConnectionInfo(ip, room.RoomName, room.PlayerName, port, (byte)room.Team);
         }
         catch (System.Exception ex)
         {
