@@ -21,13 +21,13 @@ public class MultiplayerUI
     private bool _isConnected;
     private float _opacity = 0.9f;
 
-    private ConnectionInfo _connection = new();
+    private ConnectionInfo _connection;
 
     //Stored values between F9's
-    private string _currentIP = Main.Multiplayer.LastConnectionInfo.ServerIp ?? string.Empty;
-    private string _currentPort = Main.Multiplayer.LastConnectionInfo.ServerPort.ToString() ?? string.Empty;
-    private string _currentNametag = Main.Multiplayer.LastConnectionInfo.PlayerName ?? string.Empty;
-    private string _currentTeam = Main.Multiplayer.LastConnectionInfo.TeamNumber.ToString() ?? string.Empty;
+    private string _currentIP = string.Empty;
+    private string _currentPort = string.Empty;
+    private string _currentNametag = string.Empty;
+    private string _currentTeam = string.Empty;
 
     //Displayed boxes where to fill
     private RectTransform backIP;
@@ -41,9 +41,15 @@ public class MultiplayerUI
     //Where the user is typing
     private int _selectedInput = 0;
 
-
-    private NetworkHandler networkHandler = Main.Multiplayer.NetworkHandler;
-    private InputHandler inputHandler = Main.Multiplayer.InputHandler;
+    private NetworkHandler networkHandler { get; set; }
+    private InputHandler inputHandler { get; set; }
+    public void GetHandlers(NetworkHandler network, InputHandler input, ConnectionInfo infos)
+    {
+        networkHandler = network;
+        _isConnected = network.isConnected;
+        _connection = infos;
+        inputHandler = input;
+    }
 
     public void SceneLoaded()
     {
@@ -81,6 +87,10 @@ public class MultiplayerUI
     {
         if (Input.GetKeyDown(KeyCode.F9) && _canType)
         {
+            _currentIP = _currentIP == string.Empty ? _connection.ServerIp : _currentIP;
+            _currentPort = _currentPort == string.Empty ? _connection.ServerPort.ToString() : _currentPort;
+            _currentNametag = _currentNametag == string.Empty ? _connection.PlayerName : _currentNametag;
+            _currentTeam = _currentTeam == "1" ? _connection.TeamNumber.ToString() : _currentTeam;
             _showHelp = !_showHelp;
             SwitchVisibleUI();
         }

@@ -64,6 +64,8 @@ public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData
         CompanionHandler.OnUpdate();
         NametagHandler.OnUpdate();
         NetworkHandler.OnUpdate();
+        MultiCommand.GetNetWorkHandler(NetworkHandler);
+        MultiUI.GetHandlers(NetworkHandler, InputHandler, LastConnectionInfo);
         PlayerHandler.OnUpdate();
         MultiUI.LateUpdate();
 
@@ -73,6 +75,7 @@ public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData
             OnEnable();
         else
             OnDisable();
+        ModLog.Info($"{LastConnectionInfo.ServerIp}, {LastConnectionInfo.ServerPort}, {LastConnectionInfo.PlayerName}, {LastConnectionInfo.RoomName}, {LastConnectionInfo.TeamNumber}");
     }
     public void OnEnable()
     {

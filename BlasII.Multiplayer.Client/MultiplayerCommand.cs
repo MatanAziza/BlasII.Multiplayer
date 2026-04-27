@@ -15,8 +15,13 @@ namespace BlasII.Multiplayer.Client;
 public class MultiplayerCommand : ModCommand
 {
     public MultiplayerCommand() : base("multiplayer") { }
-    private NetworkHandler networkHandler = Main.Multiplayer.NetworkHandler;
-    public static string PlayerName { get; set;}
+    private NetworkHandler networkHandler { get; set; }
+    public static string PlayerName { get; set; }
+
+    public void GetNetWorkHandler(NetworkHandler network)
+    {
+        networkHandler = network;
+    }
 
     public override void Execute(string[] args)
     {
