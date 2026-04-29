@@ -91,15 +91,15 @@ public class MultiplayerUI
         {
             if (_canType)
             {
-                _currentIP = _connection.ServerIp != string.Empty ? _connection.ServerIp : _currentIP;
-                _currentPort = _connection.ServerPort != string.Empty ? _connection.ServerPort : _currentPort;
-                _currentNametag = _connection.PlayerName != string.Empty ? _connection.PlayerName : _currentNametag;
-                _currentTeam = _connection.TeamNumber != string.Empty ? _connection.TeamNumber : _currentTeam;
+                _currentIP = _connection.ServerIp != string.Empty && _currentIP == string.Empty ? _connection.ServerIp : _currentIP;
+                _currentPort = _connection.ServerPort.ToString() != string.Empty && _currentPort == string.Empty ? _connection.ServerPort.ToString() : _currentPort;
+                _currentNametag = _connection.PlayerName != string.Empty && _currentNametag == string.Empty ? _connection.PlayerName : _currentNametag;
+                _currentTeam = _connection.TeamNumber != string.Empty && _currentTeam == string.Empty ? _connection.TeamNumber : _currentTeam;
                 _showHelp = !_showHelp;
                 SwitchVisibleUI();
             }
             else
-                _connection = new ConnectionInfo(_currentIP, _currentPort, _currentNametag , _currentTeam, "a");
+                _connection = new ConnectionInfo(_currentIP, Int32.Parse(_currentPort), _currentNametag , _currentTeam, "a");
         }
     }
 
@@ -112,7 +112,7 @@ public class MultiplayerUI
             //return;
             else
             {
-                networkHandler.Connect(_currentIP, _currentPort, new Models.RoomInfo("a", _currentNametag, _currentTeam));
+                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, _currentTeam));
                 Multiplayer.PlayerName = _currentNametag;
             }
             _isConnected = networkHandler.isConnected;

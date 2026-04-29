@@ -22,13 +22,13 @@ public class NetworkHandler
         _client.OnPacketReceived += OnPacketReceived;
     }
 
-    public void Connect(string ip, string port, RoomInfo room)
+    public void Connect(string ip, int port, RoomInfo room)
     {
         _currentRoom = room;
 
         try
         {
-            _client.Connect(ip, Int32.Parse(port));
+            _client.Connect(ip, port);
             isConnected = true;
             Main.Multiplayer.LastConnectionInfo = new ConnectionInfo(ip, port, room.PlayerName, room.Team, room.RoomName);
         }

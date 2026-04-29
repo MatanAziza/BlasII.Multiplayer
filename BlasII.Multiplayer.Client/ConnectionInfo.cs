@@ -12,7 +12,7 @@ public readonly struct ConnectionInfo
     /// Creates a new connection info
     /// </summary>
     [JsonConstructor]
-    public ConnectionInfo(string serverIp, string serverPort, string playerName, string teamNumber, string roomName)
+    public ConnectionInfo(string serverIp, int serverPort, string playerName, string teamNumber, string roomName)
     {
         ServerIp = serverIp;
         ServerPort = serverPort;
@@ -27,7 +27,7 @@ public readonly struct ConnectionInfo
     public ConnectionInfo()
     {
         ServerIp = string.Empty;
-        ServerPort = "27051";
+        ServerPort = 27051;
         PlayerName = string.Empty;
         TeamNumber = string.Empty;
         RoomName = string.Empty;
@@ -41,7 +41,7 @@ public readonly struct ConnectionInfo
     /// <summary>
     /// The port
     /// </summary>
-    public string ServerPort { get; }
+    public int ServerPort { get; }
 
     /// <summary>
     /// The name of the player
