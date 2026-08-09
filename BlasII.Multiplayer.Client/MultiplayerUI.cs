@@ -27,7 +27,7 @@ public class MultiplayerUI
     private string _currentIP = string.Empty;
     private string _currentPort = string.Empty;
     private string _currentNametag = string.Empty;
-    private string _currentTeam = "1";
+    private string _currentTeam = string.Empty;
 
     //Displayed boxes where to fill
     private RectTransform backIP;
