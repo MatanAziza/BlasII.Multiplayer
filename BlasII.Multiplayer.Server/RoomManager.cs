@@ -6,6 +6,7 @@ using BlasII.Multiplayer.Server.Models;
 using BlasII.Multiplayer;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;using Basalt.Framework.Networking.Client;
 
 namespace BlasII.Multiplayer.Server;
 
@@ -57,8 +58,6 @@ public class RoomManager
             Logger.Error($"Received {packet.GetType().Name} from non-registered player {ip}");
             return;
         }
-
-        _server.OnClientConnected += OnClientConnected;
 
         if (packet is PositionPacket position)
         {

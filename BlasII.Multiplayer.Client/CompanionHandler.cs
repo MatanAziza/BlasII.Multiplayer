@@ -41,7 +41,7 @@ public class CompanionHandler
             OnReceivePosition(position.Name, new Vector2(position.X, position.Y));
 
         if (packet is AnimationPacket animation)
-            OnReceiveAnimation(animation.Name, animation.State, animation.Time, animation.Length);
+            OnReceiveAnimation(animation.Name, animation.State, animation.Time, animation.Length, animation.Request);
 
         if (packet is DirectionPacket direction)
             OnReceiveDirection(direction.Name, direction.FacingDirection);
@@ -64,8 +64,14 @@ public class CompanionHandler
         companion.Transform.UpdatePosition(position);
     }
 
-    private void OnReceiveAnimation(string name, int state, float time, float length)
+    private void OnReceiveAnimation(string name, int state, float time, float length, bool request)
     {
+        if (request == true)
+        {
+            Main.Multiplayer.MultiUI.ConnectRoom();
+            Main.Multiplayer.MultiUI.ConnectRoom();
+        }
+
         if (!_companions.TryGetValue(name, out Companion companion))
         {
             companion = AddCompanion(name);

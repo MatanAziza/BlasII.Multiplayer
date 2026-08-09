@@ -29,7 +29,14 @@ public class PlayerHandler
 
     public void OnEnterScene() // Not sure if this actually does anything
     {
-        ModLog.Info($"Enter: {_lastPosition}, {_lastAnimationState}, {_lastDirection}, {_lastArmorName}, {_lastWeaponName}");
+        try{
+            Main.Multiplayer.MultiUI.ConnectRoom();
+        }
+        catch (Exception)
+        {
+            return;
+        }
+        Main.Multiplayer.NetworkHandler.Send(new AnimationPacket(null, _lastAnimationState, _lastAnimationTime, _lastAnimationLength, true));
         // _lastPosition = Vector2.zero;
         // _lastAnimationState = 0;
         // _lastAnimationTime = 0;
@@ -38,18 +45,10 @@ public class PlayerHandler
         // _lastArmorName = string.Empty;
         // _lastWeaponName = string.Empty;
         // _lastWeaponfxName = string.Empty;
-        try{
-            Main.Multiplayer.MultiUI.ConnectRoom();
-        }
-        catch (Exception)
-        {
-            return;
-        }
     }
 
     public void OnLeaveScene()
     {
-        ModLog.Info($"Leave: {_lastPosition}, {_lastAnimationState}, {_lastDirection}, {_lastArmorName}, {_lastWeaponName}");
         try{
             Main.Multiplayer.MultiUI.ConnectRoom();
         }
@@ -91,7 +90,7 @@ public class PlayerHandler
         ModLog.Info("Sending all status packets");
 
         Main.Multiplayer.NetworkHandler.Send(new PositionPacket(null, _lastPosition.x, _lastPosition.y));
-        Main.Multiplayer.NetworkHandler.Send(new AnimationPacket(null, _lastAnimationState, _lastAnimationTime, _lastAnimationLength));
+        Main.Multiplayer.NetworkHandler.Send(new AnimationPacket(null, _lastAnimationState, _lastAnimationTime, _lastAnimationLength, false));
         Main.Multiplayer.NetworkHandler.Send(new DirectionPacket(null, _lastDirection));
         Main.Multiplayer.NetworkHandler.Send(new EquipmentPacket(null, 0, _lastArmorName));
         Main.Multiplayer.NetworkHandler.Send(new EquipmentPacket(null, 1, _lastWeaponName));
@@ -123,7 +122,7 @@ public class PlayerHandler
         _lastAnimationState = currAnimationState;
         _lastAnimationTime = currAnimationTime;
         _lastAnimationLength = animState.length;
-        Main.Multiplayer.NetworkHandler.Send(new AnimationPacket(null, currAnimationState, currAnimationTime, animState.length));
+        Main.Multiplayer.NetworkHandler.Send(new AnimationPacket(null, currAnimationState, currAnimationTime, animState.length, false));
     }
 
     private void CheckDirection(Transform tpo)
@@ -141,8 +140,8 @@ public class PlayerHandler
     {
         string currArmorName = armor.runtimeAnimatorController?.name ?? string.Empty;
 
-        // if (_lastArmorName == currArmorName)
-        //     return;
+        if (_lastArmorName == currArmorName)
+            return;
 
         _lastArmorName = currArmorName;
         Main.Multiplayer.NetworkHandler.Send(new EquipmentPacket(null, 0, currArmorName));
