@@ -103,16 +103,47 @@ public class MultiplayerUI
         }
     }
 
+    public  void ConnectRoom()
+    {
+        if (networkHandler.isConnected){
+            try{
+                networkHandler.Disconnect();
+            } catch (Exception){
+                _isConnected = networkHandler.isConnected;
+            }
+        }
+        //return;
+        else
+        {
+            try{
+            networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("TEST", _currentNametag, _currentTeam));
+            } catch (Exception){
+                _isConnected = networkHandler.isConnected;
+            }
+            Multiplayer.PlayerName = _currentNametag;
+        }
+        _isConnected = networkHandler.isConnected;
+    }
+
     private void ConnectManager()
     {
         if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && !_showHelp)
         {
-            if (networkHandler.isConnected)
-                networkHandler.Disconnect();
+            if (networkHandler.isConnected){
+                try{
+                    networkHandler.Disconnect();
+                } catch (Exception){
+                    _isConnected = networkHandler.isConnected;
+                }
+            }
             //return;
             else
             {
-                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, _currentTeam));
+                try{
+                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("TEST", _currentNametag, _currentTeam));
+                } catch (Exception){
+                    _isConnected = networkHandler.isConnected;
+                }
                 Multiplayer.PlayerName = _currentNametag;
             }
             _isConnected = networkHandler.isConnected;

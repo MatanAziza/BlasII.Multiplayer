@@ -62,6 +62,6 @@ internal class Core
     }
 
     private const string TITLE = "Blasphemous 2 Multiplayer Server";
-    private const int PORT = 33002;
+    private const int PORT = 27051;
     private const int INTERVAL_MS = 10;
 }

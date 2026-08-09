@@ -16,6 +16,7 @@ public class AnimationPacketSerializer : IPacketSerializer
         stream.Write_int(p.State);
         stream.Write_float(p.Time);
         stream.Write_float(p.Length);
+        stream.Write_bool(p.Request);
 
         return stream;
     }
@@ -28,7 +29,8 @@ public class AnimationPacketSerializer : IPacketSerializer
         int state = stream.Read_int();
         float time = stream.Read_float();
         float length = stream.Read_float();
+        bool request = stream.Read_bool();
 
-        return new AnimationPacket(name, state, time, length);
+        return new AnimationPacket(name, state, time, length, request);
     }
 }

@@ -3,8 +3,10 @@ using Basalt.Framework.Networking;
 using Basalt.Framework.Networking.Server;
 using BlasII.Multiplayer.Core.Packets;
 using BlasII.Multiplayer.Server.Models;
+using BlasII.Multiplayer;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;using Basalt.Framework.Networking.Client;
 
 namespace BlasII.Multiplayer.Server;
 
@@ -56,8 +58,6 @@ public class RoomManager
             Logger.Error($"Received {packet.GetType().Name} from non-registered player {ip}");
             return;
         }
-
-        // TODO: when entering a new scene, also send all status packets
 
         if (packet is PositionPacket position)
         {

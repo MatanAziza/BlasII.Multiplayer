@@ -12,11 +12,14 @@ public class AnimationPacket : BasePacket, INamedPacket
 
     public float Length { get; }
 
-    public AnimationPacket(string name, int state, float time, float length)
+    public bool Request { get; }
+
+    public AnimationPacket(string name, int state, float time, float length, bool request)
     {
         Name = name;
         State = state;
         Time = time;
         Length = length;
+        Request = request;
     }
 }
