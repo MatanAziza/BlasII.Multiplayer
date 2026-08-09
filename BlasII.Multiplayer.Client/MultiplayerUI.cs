@@ -27,7 +27,7 @@ public class MultiplayerUI
     private string _currentIP = string.Empty;
     private string _currentPort = string.Empty;
     private string _currentNametag = string.Empty;
-    private string _currentTeam = string.Empty;
+    private string _currentTeam = "1";
 
     //Displayed boxes where to fill
     private RectTransform backIP;
@@ -103,6 +103,19 @@ public class MultiplayerUI
         }
     }
 
+    public  void ConnectRoom()
+    {
+        if (networkHandler.isConnected)
+            networkHandler.Disconnect();
+        //return;
+        else
+        {
+            networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("TEST", _currentNametag, _currentTeam));
+            Multiplayer.PlayerName = _currentNametag;
+        }
+        _isConnected = networkHandler.isConnected;
+    }
+
     private void ConnectManager()
     {
         if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && _selectedInput == 4 && !_showHelp)
@@ -112,7 +125,7 @@ public class MultiplayerUI
             //return;
             else
             {
-                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("a", _currentNametag, _currentTeam));
+                networkHandler.Connect(_currentIP, Int32.Parse(_currentPort), new Models.RoomInfo("TEST", _currentNametag, _currentTeam));
                 Multiplayer.PlayerName = _currentNametag;
             }
             _isConnected = networkHandler.isConnected;

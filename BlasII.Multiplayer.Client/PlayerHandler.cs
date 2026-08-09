@@ -3,11 +3,14 @@ using BlasII.ModdingAPI;
 using BlasII.Multiplayer.Core.Packets;
 using Il2CppTGK.Game;
 using UnityEngine;
+using System;
+using UnityEngine.Rendering;
 
 namespace BlasII.Multiplayer.Client;
 
 public class PlayerHandler
 {
+    private NetworkClient _client;
     private Vector2 _lastPosition;
     private int _lastAnimationState;
     private float _lastAnimationTime;
@@ -20,31 +23,48 @@ public class PlayerHandler
 
     public PlayerHandler(NetworkClient client)
     {
+        _client = client;
         client.OnClientConnected += OnClientConnected;
     }
 
     public void OnEnterScene() // Not sure if this actually does anything
     {
-        _lastPosition = Vector2.zero;
-        _lastAnimationState = 0;
-        _lastAnimationTime = 0;
-        _lastDirection = false;
+        ModLog.Info($"Enter: {_lastPosition}, {_lastAnimationState}, {_lastDirection}, {_lastArmorName}, {_lastWeaponName}");
+        // _lastPosition = Vector2.zero;
+        // _lastAnimationState = 0;
+        // _lastAnimationTime = 0;
+        // _lastDirection = false;
 
-        _lastArmorName = string.Empty;
-        _lastWeaponName = string.Empty;
-        _lastWeaponfxName = string.Empty;
+        // _lastArmorName = string.Empty;
+        // _lastWeaponName = string.Empty;
+        // _lastWeaponfxName = string.Empty;
+        try{
+            Main.Multiplayer.MultiUI.ConnectRoom();
+        }
+        catch (Exception)
+        {
+            return;
+        }
     }
 
     public void OnLeaveScene()
     {
-        _lastPosition = Vector2.zero;
-        _lastAnimationState = 0;
-        _lastAnimationTime = 0;
-        _lastDirection = false;
+        ModLog.Info($"Leave: {_lastPosition}, {_lastAnimationState}, {_lastDirection}, {_lastArmorName}, {_lastWeaponName}");
+        try{
+            Main.Multiplayer.MultiUI.ConnectRoom();
+        }
+        catch (Exception)
+        {
+            return;
+        }
+        // _lastPosition = Vector2.zero;
+        // _lastAnimationState = 0;
+        // _lastAnimationTime = 0;
+        // _lastDirection = false;
 
-        _lastArmorName = string.Empty;
-        _lastWeaponName = string.Empty;
-        _lastWeaponfxName = string.Empty;
+        // _lastArmorName = string.Empty;
+        // _lastWeaponName = string.Empty;
+        // _lastWeaponfxName = string.Empty;
     }
 
     public void OnUpdate()
@@ -121,8 +141,8 @@ public class PlayerHandler
     {
         string currArmorName = armor.runtimeAnimatorController?.name ?? string.Empty;
 
-        if (_lastArmorName == currArmorName)
-            return;
+        // if (_lastArmorName == currArmorName)
+        //     return;
 
         _lastArmorName = currArmorName;
         Main.Multiplayer.NetworkHandler.Send(new EquipmentPacket(null, 0, currArmorName));

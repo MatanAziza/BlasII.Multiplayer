@@ -3,6 +3,7 @@ using Basalt.Framework.Networking;
 using Basalt.Framework.Networking.Server;
 using BlasII.Multiplayer.Core.Packets;
 using BlasII.Multiplayer.Server.Models;
+using BlasII.Multiplayer;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,7 +58,7 @@ public class RoomManager
             return;
         }
 
-        // TODO: when entering a new scene, also send all status packets
+        _server.OnClientConnected += OnClientConnected;
 
         if (packet is PositionPacket position)
         {

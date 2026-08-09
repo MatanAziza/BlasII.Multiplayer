@@ -11,7 +11,7 @@ using BlasII.CheatConsole;
 
 namespace BlasII.Multiplayer.Client;
 
-public class Multiplayer : BlasIIMod//, IGlobalPersistentMod<MultiplayerGlobalData>
+public class Multiplayer : BlasIIMod, IGlobalPersistentMod<MultiplayerGlobalData>
 {
     private readonly NetworkClient _client;
 
@@ -118,21 +118,21 @@ public class Multiplayer : BlasIIMod//, IGlobalPersistentMod<MultiplayerGlobalDa
     /// <summary>
     /// Save last connection info
     /// </summary>
-    //public MultiplayerGlobalData SaveGlobal()
-    //{
-    //    return new MultiplayerGlobalData()
-    //    {
-    //        LastConnection = LastConnectionInfo
-    //    };
-    //}
+    public MultiplayerGlobalData SaveGlobal()
+    {
+        return new MultiplayerGlobalData()
+        {
+            LastConnection = LastConnectionInfo
+        };
+    }
 
-    ///// <summary>
-    ///// Load last connection info
-    ///// </summary>
-    //public void LoadGlobal(MultiplayerGlobalData data)
-    //{
-    //    LastConnectionInfo = data.LastConnection;
-    //}
+    /// <summary>
+    /// Load last connection info
+    /// </summary>
+    public void LoadGlobal(MultiplayerGlobalData data)
+    {
+        LastConnectionInfo = data.LastConnection;
+    }
 
     protected override void OnRegisterServices(ModServiceProvider provider)
     {
